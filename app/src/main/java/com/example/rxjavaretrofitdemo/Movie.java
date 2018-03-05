@@ -190,6 +190,16 @@ public class Movie {
         public void setMin(int min) {
             this.min = min;
         }
+
+        @Override
+        public String toString() {
+            return "RatingBean{" +
+                    "max=" + max +
+                    ", average=" + average +
+                    ", stars='" + stars + '\'' +
+                    ", min=" + min +
+                    '}';
+        }
     }
 
     public static class ImagesBean {
@@ -228,6 +238,15 @@ public class Movie {
 
         public void setMedium(String medium) {
             this.medium = medium;
+        }
+
+        @Override
+        public String toString() {
+            return "ImagesBean{" +
+                    "small='" + small + '\'' +
+                    ", large='" + large + '\'' +
+                    ", medium='" + medium + '\'' +
+                    '}';
         }
     }
 
@@ -280,6 +299,16 @@ public class Movie {
             this.id = id;
         }
 
+        @Override
+        public String toString() {
+            return "CastsBean{" +
+                    "alt='" + alt + '\'' +
+                    ", avatars=" + avatars +
+                    ", name='" + name + '\'' +
+                    ", id='" + id + '\'' +
+                    '}';
+        }
+
         public static class AvatarsBean {
             /**
              * small : https://img3.doubanio.com/view/celebrity/s_ratio_celebrity/public/p17525.webp
@@ -316,6 +345,15 @@ public class Movie {
 
             public void setMedium(String medium) {
                 this.medium = medium;
+            }
+
+            @Override
+            public String toString() {
+                return "AvatarsBean{" +
+                        "small='" + small + '\'' +
+                        ", large='" + large + '\'' +
+                        ", medium='" + medium + '\'' +
+                        '}';
             }
         }
     }
@@ -369,6 +407,16 @@ public class Movie {
             this.id = id;
         }
 
+        @Override
+        public String toString() {
+            return "DirectorsBean{" +
+                    "alt='" + alt + '\'' +
+                    ", avatars=" + avatars +
+                    ", name='" + name + '\'' +
+                    ", id='" + id + '\'' +
+                    '}';
+        }
+
         public static class AvatarsBeanX {
             /**
              * small : https://img3.doubanio.com/view/celebrity/s_ratio_celebrity/public/p230.webp
@@ -405,6 +453,15 @@ public class Movie {
 
             public void setMedium(String medium) {
                 this.medium = medium;
+            }
+
+            @Override
+            public String toString() {
+                return "AvatarsBeanX{" +
+                        "small='" + small + '\'' +
+                        ", large='" + large + '\'' +
+                        ", medium='" + medium + '\'' +
+                        '}';
             }
         }
     }

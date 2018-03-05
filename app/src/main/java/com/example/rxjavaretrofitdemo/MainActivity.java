@@ -6,6 +6,8 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.List;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -32,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void getMovie() {
-        Subscriber<Movie> subscriber = new Subscriber<Movie>() {
+        Subscriber<List<Movie>> subscriber = new Subscriber<List<Movie>>() {
             @Override
             public void onCompleted() {
                 Toast.makeText(MainActivity.this, "Completed!", Toast.LENGTH_SHORT).show();
@@ -44,8 +46,12 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onNext(Movie movie) {
-                mTextView.setText(movie.toString());
+            public void onNext(List<Movie> movies) {
+                StringBuilder stringBuilder = new StringBuilder();
+                for (Movie movie : movies) {
+                    stringBuilder.append(movie.toString());
+                }
+                mTextView.setText(stringBuilder);
             }
         };
         HttpMethods.getInstance().getMovie(subscriber, 0, 10);

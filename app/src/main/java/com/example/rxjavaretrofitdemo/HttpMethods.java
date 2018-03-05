@@ -1,5 +1,6 @@
 package com.example.rxjavaretrofitdemo;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
@@ -8,6 +9,7 @@ import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
 public class HttpMethods {
@@ -39,11 +41,27 @@ public class HttpMethods {
         return SingletonHolder.INSTANCE;
     }
 
-    public void getMovie(Subscriber<Movie> subscriber, int start, int count) {
+    public void getMovie(Subscriber<List<Movie>> subscriber, int start, int count) {
         movieService.getTopMovie(start, count)
+                .map(new HttpResultFunc<List<Movie>>())
                 .subscribeOn(Schedulers.io())
                 .unsubscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(subscriber);
     }
+
+    private class HttpResultFunc<T> implements Func1<HttpResult<T>, T> {
+        @Override
+        public T call(HttpResult<T> tHttpResult) {
+            if (tHttpResult.getCount() == 0) {
+                try {
+                    throw new MovieCountException(tHttpResult.getCount());
+                } catch (MovieCountException e) {
+                    e.printStackTrace();
+                }
+            }
+            return tHttpResult.getSubjects();
+        }
+    }
+
 }
