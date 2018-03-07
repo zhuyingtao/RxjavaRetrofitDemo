@@ -2,6 +2,7 @@ package com.example.rxjavaretrofitdemo;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -11,9 +12,12 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import rx.Subscriber;
+import io.reactivex.Observer;
+import io.reactivex.disposables.Disposable;
 
 public class MainActivity extends AppCompatActivity {
+
+    private static final String TAG = "MainActivity";
 
     @BindView(R.id.btn_click)
     Button mButton;
@@ -34,15 +38,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void getMovie() {
-        Subscriber<List<Movie>> subscriber = new Subscriber<List<Movie>>() {
+        Observer<List<Movie>> observer = new Observer<List<Movie>>() {
             @Override
-            public void onCompleted() {
-                Toast.makeText(MainActivity.this, "Completed!", Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                mTextView.setText(e.getMessage());
+            public void onSubscribe(Disposable d) {
+                Log.d(TAG, "onSubscribe: ");
             }
 
             @Override
@@ -53,7 +52,17 @@ public class MainActivity extends AppCompatActivity {
                 }
                 mTextView.setText(stringBuilder);
             }
+
+            @Override
+            public void onError(Throwable e) {
+                mTextView.setText(e.getMessage());
+            }
+
+            @Override
+            public void onComplete() {
+                Toast.makeText(MainActivity.this, "Completed!", Toast.LENGTH_SHORT).show();
+            }
         };
-        HttpMethods.getInstance().getMovie(subscriber, 0, 10);
+        HttpMethods.getInstance().getMovie(observer, 0, 10);
     }
 }
