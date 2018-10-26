@@ -11,43 +11,66 @@ import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.ObservableSource;
 import io.reactivex.Observer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
+import io.reactivex.schedulers.Schedulers;
 
+/**
+ * @author zyt
+ */
 public class RxjavaDemo {
 
     private static final String TAG = "RxjavaDemo";
 
-    private void create() {
+    public void create() {
+        Observable.create(
+                new ObservableOnSubscribe<Integer>() {
+                    @Override
+                    public void subscribe(ObservableEmitter<Integer> emitter) throws Exception {
+                        Log.d(TAG, "subscribe: thread is " + Thread.currentThread().getName());
+                        emitter.onNext(1);
+                        emitter.onNext(2);
+                        emitter.onNext(3);
+                        emitter.onComplete();
+                        emitter.onNext(4);
+                        emitter.onNext(5);
+                    }
+                })
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .observeOn(Schedulers.io())
+                .subscribe(
+                        new Observer<Integer>() {
 
-        Observable.create(new ObservableOnSubscribe<Integer>() {
-            @Override
-            public void subscribe(ObservableEmitter<Integer> emitter) throws Exception {
-                emitter.onNext(1);
-                emitter.onNext(2);
-                emitter.onNext(3);
-                emitter.onComplete();
-            }
-        }).subscribe(new Observer<Integer>() {
-            @Override
-            public void onSubscribe(Disposable d) {
-                Log.d(TAG, "onSubscribe: ");
-            }
+                            private Disposable mDisposable;
 
-            @Override
-            public void onNext(Integer integer) {
-                Log.d(TAG, "onNext: ");
-            }
+                            @Override
+                            public void onSubscribe(Disposable d) {
+                                Log.d(TAG, "onSubscribe: thread is " + Thread.currentThread().getName());
+                                mDisposable = d;
+                            }
 
-            @Override
-            public void onError(Throwable e) {
-                Log.d(TAG, "onError: ");
-            }
+                            @Override
+                            public void onNext(Integer integer) {
+                                Log.d(TAG, "onNext: " + integer);
+                                if (integer == 2) {
+                                    mDisposable.dispose();
+                                    Log.d(TAG, "onNext: dispose");
+                                }
+                            }
 
-            @Override
-            public void onComplete() {
-                Log.d(TAG, "onComplete: ");
-            }
-        });
+                            @Override
+                            public void onError(Throwable e) {
+                                Log.d(TAG, "onError: ");
+                            }
+
+                            @Override
+                            public void onComplete() {
+                                Log.d(TAG, "onComplete: ");
+                            }
+                        });
     }
 
     private void just() {
@@ -164,5 +187,43 @@ public class RxjavaDemo {
 
                     }
                 });
+    }
+
+    public void map() {
+        Observable.create(new ObservableOnSubscribe<Integer>() {
+            @Override
+            public void subscribe(ObservableEmitter<Integer> emitter) throws Exception {
+                emitter.onNext(1);
+            }
+        }).map(new Function<Integer, String>() {
+            @Override
+            public String apply(Integer integer) throws Exception {
+                return "This is " + integer;
+            }
+        }).subscribe(new Consumer<String>() {
+            @Override
+            public void accept(String s) throws Exception {
+                Log.d(TAG, "accept: " + s);
+            }
+        });
+    }
+
+    public void flatMap() {
+        Observable.create(new ObservableOnSubscribe<Integer>() {
+            @Override
+            public void subscribe(ObservableEmitter<Integer> emitter) throws Exception {
+                emitter.onNext(1);
+            }
+        }).flatMap(new Function<Integer, ObservableSource<String>>() {
+            @Override
+            public ObservableSource<String> apply(Integer integer) throws Exception {
+                return new Observable<String>() {
+                    @Override
+                    protected void subscribeActual(Observer<? super String> observer) {
+
+                    }
+                }
+            }
+        })
     }
 }
