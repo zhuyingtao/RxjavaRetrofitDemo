@@ -29,4 +29,14 @@ public class RxjavaDemoTest {
     public void map() throws Exception {
         mDemo.map();
     }
+
+    @Test
+    public void flatMap() throws Exception {
+        mDemo.flatMap();
+    }
+
+    @Test
+    public void zip() throws Exception {
+        mDemo.zip();
+    }
 }
